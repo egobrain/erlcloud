@@ -124,8 +124,14 @@
           %% other services: 10s.
           timeout=undefined::timeout()|undefined,
           cloudtrail_raw_result=false::boolean(),
-          http_client=lhttpc::erlcloud_httpc:request_fun(), %% If using hackney, ensure that it is started.
-          hackney_pool=default::atom(), %% The name of the http request pool hackney should use.
+          http_client=lhttpc::erlcloud_httpc:request_fun(), %% Ensure that it is started.
+          %% The name of the http request pool hackney should use.
+          %% You can also use different pools in your application which allows you to maintain a group of connections(
+          %% https://github.com/benoitc/hackney/tree/master/doc#use-the-default-pool)
+          hackney_pool=default::atom(),
+          %% https://github.com/benoitc/hackney/blob/master/doc/hackney.md see Options
+          %% hackney request options that will be pasted in each request invocation
+          hackney_options=[],
           %% The name of the http request pool lhttpc should use
           %% Note: If the lhttpc pool does not exists it will be created one with the lhttpc
           %%  default settings [{connection_timeout,300000},{pool_size,1000}]

@@ -159,6 +159,11 @@ Example of such app.config:
 
 
 ### Basic use ###
+Before you start erlcloud you need to define erlcloud http backend library
+via 'erlcloud.aws_config.http_client = lhttpc | hackney | httpc'
+and start in manualy.
+
+
 Then you can start making api calls, like:
 ```
 erlcloud_ec2:describe_images().
@@ -204,6 +209,6 @@ In general it follows default indentation rules of official erlang-mode as provi
 - Public interfaces with paging logic should prefer `{ok, Results, Marker}` style to the `{{paged, Marker}, Results}` found in some modules.
 In case of records output, tokens should be part of the record.
 - Passing next page `NextToken`, `NextMarker` is preferred with `Opts` rather than a fun parameter like found in many modules.
-- Public interfaces should normally expose proplists over records. All new modules are preferred to have both. 
+- Public interfaces should normally expose proplists over records. All new modules are preferred to have both.
 - Exposed records are to be used only for complex outputs. Examples to follow: ddb2, ecs.
 - Library should not expose any long running or stateful processes - no gen_servers, no caches and etc.

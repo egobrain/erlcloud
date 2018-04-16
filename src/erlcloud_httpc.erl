@@ -13,7 +13,7 @@
 
 -export([request/6]).
 
--type request_fun() :: 
+-type request_fun() ::
     lhttpc | httpc | hackney |
     {module(), atom()} |
     fun((string(),
@@ -51,11 +51,11 @@ request_lhttpc(URL, Method, Hdrs, Body, Timeout, #aws_config{lhttpc_pool = Pool}
 
 %% Guard clause protects against empty bodied requests from being
 %% unable to find a matching httpc:request call.
-request_httpc(URL, Method, Hdrs, <<>>, Timeout, _Config) 
-    when (Method =:= options) orelse 
-         (Method =:= get) orelse 
-         (Method =:= head) orelse 
-         (Method =:= delete) orelse 
+request_httpc(URL, Method, Hdrs, <<>>, Timeout, _Config)
+    when (Method =:= options) orelse
+         (Method =:= get) orelse
+         (Method =:= head) orelse
+         (Method =:= delete) orelse
          (Method =:= trace) ->
     HdrsStr = [{to_list_string(K), to_list_string(V)} || {K, V} <- Hdrs],
     response_httpc(httpc:request(Method, {URL, HdrsStr},
@@ -70,18 +70,18 @@ request_httpc(URL, Method, Hdrs, Body, Timeout, _Config) ->
                                  [{timeout, Timeout}],
                                  [{body_format, binary}])).
 
-request_hackney(URL, Method, Hdrs, Body, Timeout, #aws_config{hackney_pool = Pool}) ->
+request_hackney(URL, Method, Hdrs, Body, Timeout,
+    #aws_config{hackney_pool = Pool,
+                hackney_options = ConnectionOpts
+               }) ->
     BinURL = to_binary(URL),
     BinHdrs = [{to_binary(K), to_binary(V)} || {K, V} <- Hdrs],
-    PoolOpt = if Pool =:= undefined ->
-                      [];
-                 true ->
-                      [{pool, Pool}]
-              end,
-    response_hackney(hackney:request(Method,
-                                     BinURL, BinHdrs,
-                                     Body,
-                                     [{recv_timeout, Timeout}] ++ PoolOpt)).
+    Opts0 = [{recv_timeout, Timeout} | ConnectionOpts],
+    Opts = case Pool of
+               undefined -> Opts0;
+               _ -> [{pool, Pool} | Opts0]
+           end,
+    response_hackney(hackney:request(Method, BinURL, BinHdrs, Body, Opts)).
 
 response_httpc({ok, {{_HTTPVer, Status, StatusLine}, Headers, Body}}) ->
     {ok, {{Status, StatusLine}, Headers, Body}};
@@ -117,4 +117,3 @@ to_binary(Val) when erlang:is_list(Val) ->
   erlang:list_to_binary(Val);
 to_binary(Val) when erlang:is_binary(Val) ->
   Val.
-
