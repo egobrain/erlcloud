@@ -14,7 +14,9 @@
                   inets,
                   jsx,
                   eini,
-                  base16]},
+                  base16,
+                  hackney
+                 ]},
   {modules, []},
   {env, []},
   {licenses, ["MIT"]},
