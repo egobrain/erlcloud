@@ -131,7 +131,14 @@
           hackney_pool=default::atom(),
           %% https://github.com/benoitc/hackney/blob/master/doc/hackney.md see Options
           %% hackney request options that will be pasted in each request invocation
-          hackney_options=[],
+          hackney_options=[
+            insecure,
+            {connect_options, [
+              {keepalive, true},
+              {nodelay, true},
+              inet
+            ]}
+          ],
           %% The name of the http request pool lhttpc should use
           %% Note: If the lhttpc pool does not exists it will be created one with the lhttpc
           %%  default settings [{connection_timeout,300000},{pool_size,1000}]
